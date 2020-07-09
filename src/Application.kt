@@ -2,6 +2,7 @@ package moe.msm
 
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.typesafe.config.ConfigFactory
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import io.ktor.application.Application
@@ -24,11 +25,15 @@ import java.util.*
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
+// Load database config
 private fun hikari(): HikariDataSource {
+    val c = ConfigFactory.load()
     val config = HikariConfig()
-    config.driverClassName = "org.h2.Driver"
-    config.jdbcUrl = "jdbc:h2:mem:test"
-    config.maximumPoolSize = 3
+    config.driverClassName = c.getString("ktor.dataSource.driverClassName")
+    config.jdbcUrl = c.getString("ktor.dataSource.jdbcUrl")
+    config.username = c.getString("ktor.dataSource.username")
+    config.password = c.getString("ktor.dataSource.password")
+    config.maximumPoolSize = c.getInt("ktor.dataSource.maximumPoolSize")
     config.isAutoCommit = false
     config.transactionIsolation = "TRANSACTION_REPEATABLE_READ"
     config.validate()
@@ -41,24 +46,26 @@ private fun hikari(): HikariDataSource {
 fun Application.module(testing: Boolean = false) {
     Database.connect(hikari())
 
-    // Add some test data
     transaction {
-        SchemaUtils.create(Machines)
-        SchemaUtils.create(Networks)
-        SchemaUtils.create(Records)
-        val m = MachineDAO.new {
-            name = "Test"
-            uuid = UUID.randomUUID()
-        }
-        val n = NetworkDAO.new {
-            machine = m
-            name = "Test"
-            uuid = UUID.randomUUID()
-        }
-        RecordDAO.new {
-            network = n
-            latency = 10
-            isUp = true
+        // Initialize database schema here. Should switch a better database migration tool
+        SchemaUtils.createMissingTablesAndColumns(Machines, Networks, Records)
+        commit()
+        // Add some test data
+        if (MachineDAO.count() == 0L) {
+            val m = MachineDAO.new {
+                name = "Test"
+                uuid = UUID.randomUUID()
+            }
+            val n = NetworkDAO.new {
+                machine = m
+                name = "Test"
+                uuid = UUID.randomUUID()
+            }
+            RecordDAO.new {
+                network = n
+                latency = 10
+                isUp = true
+            }
         }
     }
 
