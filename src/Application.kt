@@ -27,13 +27,13 @@ fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
 // Load database config
 private fun hikari(): HikariDataSource {
-    val c = ConfigFactory.load()
+    val c = ConfigFactory.load().getConfig("ktor.security.dataSource")
     val config = HikariConfig()
-    config.driverClassName = c.getString("ktor.dataSource.driverClassName")
-    config.jdbcUrl = c.getString("ktor.dataSource.jdbcUrl")
-    config.username = c.getString("ktor.dataSource.username")
-    config.password = c.getString("ktor.dataSource.password")
-    config.maximumPoolSize = c.getInt("ktor.dataSource.maximumPoolSize")
+    config.driverClassName = c.getString("driverClassName")
+    config.jdbcUrl = c.getString("jdbcUrl")
+    config.username = c.getString("username")
+    config.password = c.getString("password")
+    config.maximumPoolSize = c.getInt("maximumPoolSize")
     config.isAutoCommit = false
     config.transactionIsolation = "TRANSACTION_REPEATABLE_READ"
     config.validate()
