@@ -36,6 +36,15 @@ fun Route.apiController() {
         get("/network/{uuid}") {
             call.respond(recordService.getByUUID(UUID.fromString(call.parameters["uuid"])))
         }
+
+        get("/submit") {
+            val param = call.request.queryParameters
+            val networkUUID: String? = param["network"]
+            assert(networkUUID != null) { "Network can't be null" }
+            val latency: String? = param["latency"]
+            val isUp: String? = param["isUp"]
+            call.respond(recordService.saveRecord(networkUUID!!, latency, isUp))
+        }
     }
 
 }
