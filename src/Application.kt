@@ -4,21 +4,15 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
-import freemarker.cache.ClassTemplateLoader
 import io.ktor.application.Application
 import io.ktor.application.call
 import io.ktor.application.install
 import io.ktor.features.ContentNegotiation
-import io.ktor.features.StatusPages
-import io.ktor.freemarker.FreeMarker
-import io.ktor.freemarker.FreeMarkerContent
-import io.ktor.http.ContentType
-import io.ktor.http.HttpStatusCode
+import io.ktor.http.content.defaultResource
 import io.ktor.http.content.resources
 import io.ktor.http.content.static
 import io.ktor.jackson.jackson
-import io.ktor.response.respond
-import io.ktor.response.respondText
+import io.ktor.response.respondRedirect
 import io.ktor.routing.get
 import io.ktor.routing.routing
 import moe.msm.controller.apiController
@@ -67,9 +61,6 @@ fun Application.module(testing: Boolean = false) {
             isUp = true
         }
     }
-    install(FreeMarker) {
-        templateLoader = ClassTemplateLoader(this::class.java.classLoader, "templates")
-    }
 
     install(ContentNegotiation) {
         jackson {
@@ -83,27 +74,14 @@ fun Application.module(testing: Boolean = false) {
         apiController()
 
         get("/") {
-            call.respondText("Server Running", contentType = ContentType.Text.Plain)
+            call.respondRedirect("/web")
         }
 
-        get("/html-freemarker") {
-            call.respond(FreeMarkerContent("index.ftl", mapOf("data" to IndexData(listOf(1, 2, 3))), ""))
+        static("/web") {
+            resources("web")
+            defaultResource("index.html", "web")
         }
 
-        // Static feature. Try to access `/static/ktor_logo.svg`
-        static("/static") {
-            resources("static")
-        }
-
-        install(StatusPages) {
-            exception<AuthenticationException> { cause ->
-                call.respond(HttpStatusCode.Unauthorized)
-            }
-            exception<AuthorizationException> { cause ->
-                call.respond(HttpStatusCode.Forbidden)
-            }
-
-        }
     }
 }
 
