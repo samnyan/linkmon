@@ -84,8 +84,3 @@ fun Application.module(testing: Boolean = false) {
 
     }
 }
-
-data class IndexData(val items: List<Int>)
-
-class AuthenticationException : RuntimeException()
-class AuthorizationException : RuntimeException()
