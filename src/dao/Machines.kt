@@ -9,13 +9,14 @@ import org.jetbrains.exposed.dao.id.LongIdTable
 /**
  * @author sam_nya (privateamusement@protonmail.com)
  */
-object Machines: LongIdTable() {
+object Machines : LongIdTable() {
     val uuid = uuid("uuid").uniqueIndex()
     val name = varchar("name", 255).uniqueIndex()
 }
 
-class MachineDAO(id: EntityID<Long>): LongEntity(id) {
-    companion object: LongEntityClass<MachineDAO>(Machines)
+class MachineDAO(id: EntityID<Long>) : LongEntity(id) {
+    companion object : LongEntityClass<MachineDAO>(Machines)
+
     var uuid by Machines.uuid
     var name by Machines.name
 

@@ -1,9 +1,5 @@
 package moe.msm.model
 
-import moe.msm.dao.Networks
-import org.jetbrains.exposed.dao.LongEntity
-import org.jetbrains.exposed.dao.LongEntityClass
-import org.jetbrains.exposed.dao.id.EntityID
 import java.util.*
 
 /**

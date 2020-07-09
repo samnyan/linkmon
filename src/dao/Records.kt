@@ -11,15 +11,16 @@ import java.time.LocalDateTime
 /**
  * @author sam_nya (privateamusement@protonmail.com)
  */
-object Records: LongIdTable() {
+object Records : LongIdTable() {
     val network = reference("network_id", Networks)
     val latency = long("latency").default(-1)
     val isUp = bool("is_up").default(true)
     val time = datetime("time").default(LocalDateTime.now())
 }
 
-class RecordDAO(id: EntityID<Long>): LongEntity(id) {
-    companion object: LongEntityClass<RecordDAO>(Records)
+class RecordDAO(id: EntityID<Long>) : LongEntity(id) {
+    companion object : LongEntityClass<RecordDAO>(Records)
+
     var network by NetworkDAO referencedOn Records.network
     var latency by Records.latency
     var isUp by Records.isUp

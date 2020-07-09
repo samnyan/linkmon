@@ -1,7 +1,6 @@
 package moe.msm.service
 
 import moe.msm.dao.NetworkDAO
-import moe.msm.model.Network
 import org.jetbrains.exposed.dao.with
 import org.jetbrains.exposed.sql.transactions.transaction
 
