@@ -16,11 +16,14 @@ import io.ktor.jackson.jackson
 import io.ktor.response.respondRedirect
 import io.ktor.routing.get
 import io.ktor.routing.routing
+import io.ktor.thymeleaf.Thymeleaf
 import moe.msm.controller.apiController
+import moe.msm.controller.webController
 import moe.msm.dao.*
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver
 import java.util.*
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
@@ -69,6 +72,13 @@ fun Application.module(testing: Boolean = false) {
         }
     }
 
+    install(Thymeleaf) {
+        setTemplateResolver(ClassLoaderTemplateResolver().apply {
+            prefix = "templates/"
+            suffix = ".html"
+            characterEncoding = "utf-8"
+        })
+    }
     install(ContentNegotiation) {
         jackson {
             enable(SerializationFeature.INDENT_OUTPUT)
@@ -79,14 +89,15 @@ fun Application.module(testing: Boolean = false) {
     routing {
 
         apiController()
+        webController()
 
         get("/") {
             call.respondRedirect("/web")
         }
 
-        static("/web") {
-            resources("web")
-            defaultResource("index.html", "web")
+        static("/static") {
+            resources("static")
+            defaultResource("index.html", "static")
         }
 
     }
