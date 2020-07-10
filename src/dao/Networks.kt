@@ -5,6 +5,7 @@ import org.jetbrains.exposed.dao.LongEntity
 import org.jetbrains.exposed.dao.LongEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.LongIdTable
+import org.jetbrains.exposed.sql.ReferenceOption
 
 /**
  * @author sam_nya (privateamusement@protonmail.com)
@@ -12,7 +13,7 @@ import org.jetbrains.exposed.dao.id.LongIdTable
 object Networks : LongIdTable() {
     val uuid = uuid("uuid").uniqueIndex()
     val name = varchar("name", 255)
-    val machine = reference("machine_id", Machines)
+    val machine = reference("machine_id", Machines, onDelete = ReferenceOption.CASCADE)
 }
 
 class NetworkDAO(id: EntityID<Long>) : LongEntity(id) {

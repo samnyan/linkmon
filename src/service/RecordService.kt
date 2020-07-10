@@ -21,14 +21,20 @@ class RecordService {
         }
     }
 
+    fun getByNetworkUUID(uuid: UUID): List<Record> {
+        val query = Records.innerJoin(Networks).select { Networks.uuid eq uuid }.withDistinct()
+        return transaction {
+            RecordDAO.wrapRows(query).map { n -> n.toModel() }
+        }
+    }
+
     fun saveRecord(networkUUID: String, latency: String?, up: String?): Record {
         val n = transaction {
-            NetworkDAO.find { Networks.uuid eq UUID.fromString(networkUUID) }.firstOrNull()
+            NetworkDAO.find { Networks.uuid eq UUID.fromString(networkUUID) }.first()
         }
-        assert(n != null) { "Network not found" }
         return transaction {
             RecordDAO.new {
-                network = n!!
+                network = n
                 if (latency != null) this.latency = latency.toLong()
                 if (up != null) this.isUp = up.toBoolean()
                 time = LocalDateTime.now()

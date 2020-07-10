@@ -9,15 +9,19 @@ import io.ktor.application.Application
 import io.ktor.application.call
 import io.ktor.application.install
 import io.ktor.features.ContentNegotiation
+import io.ktor.features.StatusPages
+import io.ktor.http.HttpStatusCode
 import io.ktor.http.content.defaultResource
 import io.ktor.http.content.resources
 import io.ktor.http.content.static
 import io.ktor.jackson.jackson
+import io.ktor.response.respond
 import io.ktor.response.respondRedirect
 import io.ktor.routing.get
 import io.ktor.routing.routing
 import moe.msm.controller.apiController
 import moe.msm.dao.*
+import moe.msm.model.ErrorMessage
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -73,6 +77,25 @@ fun Application.module(testing: Boolean = false) {
         jackson {
             enable(SerializationFeature.INDENT_OUTPUT)
             registerModule(JavaTimeModule())
+        }
+    }
+
+    install(StatusPages) {
+        exception<NoSuchElementException> { cause ->
+            call.respond(
+                HttpStatusCode.NotFound,
+                ErrorMessage(cause.javaClass.simpleName, "Not Found: " + cause.message)
+            )
+        }
+        exception<RequestBodyNotFoundException> { cause ->
+            call.respond(HttpStatusCode.BadRequest, ErrorMessage(cause))
+        }
+        exception<ValidationException> { cause ->
+            call.respond(HttpStatusCode.UnprocessableEntity, ErrorMessage(cause))
+        }
+        exception<Throwable> { cause ->
+            cause.printStackTrace()
+            call.respond(HttpStatusCode.InternalServerError, ErrorMessage(cause))
         }
     }
 
