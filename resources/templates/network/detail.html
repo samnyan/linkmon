@@ -1,0 +1,63 @@
+<html lang="zh"
+      layout:decorate="~{commons/layout.html}"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="${network.name} + ' - LinkMon Web'"></title>
+</head>
+<!--/*@thymesVar id="network" type="moe.msm.model.Network"*/-->
+<body>
+<section layout:fragment="content">
+    <div>
+        <header class="header-toolbar">
+            <div class="header-text">
+                <h1 th:text="${network.name} + '\'s Records'"></h1>
+            </div>
+        </header>
+        <input hidden="hidden" id="uuid" th:value="${network.uuid.toString()}" type="text">
+        <div id="chart">
+
+        </div>
+
+    </div>
+    <script>
+        function prepData(packed) {
+            let data = [
+                Array(packed.length),
+                Array(packed.length)
+            ]
+
+            for (let i = 0; i < packed.length; i++) {
+                data[0][i] = new Date(packed[i].time).getTime() / 1000
+                data[1][i] = packed[i].isUp ? packed[i].latency : 0
+            }
+            return data;
+        }
+
+        function makeChart(data) {
+            const opts = {
+                title: "Latency Graph",
+                width: 640,
+                height: 600,
+                series: [
+                    {},
+                    {
+                        label: "Latency",
+                        scale: "ms",
+                        value: (u, v) => v.toFixed(2),
+                        stroke: "red",
+                        width: 1 / devicePixelRatio,
+                    }
+                ]
+            }
+            let plot = new uPlot(opts, data, document.getElementById("chart"))
+        }
+
+        const uuid = document.getElementById('uuid').value
+        fetch("/api/network/" + uuid + "/record").then(r => r.json()).then(packed => {
+            let data = prepData(packed);
+            setTimeout(() => makeChart(data), 0);
+        });
+    </script>
+</section>
+</body>
+</html>

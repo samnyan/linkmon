@@ -15,7 +15,7 @@ import java.util.*
  * @author sam_nya (privateamusement@protonmail.com)
  */
 class NetworkService {
-    fun getAllNetwork() =
+    fun getAll() =
         transaction {
             NetworkDAO.all().with(NetworkDAO::machine).map { networkDAO -> networkDAO.toModel() }
         }

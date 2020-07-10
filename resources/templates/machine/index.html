@@ -1,0 +1,37 @@
+<html lang="zh"
+      layout:decorate="~{commons/layout.html}"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Machines - LinkMon Web</title>
+</head>
+<body>
+<section layout:fragment="content">
+    <div>
+        <header class="header-toolbar">
+            <div class="header-text">
+                <h1>Machines</h1>
+            </div>
+            <div class="header-action">
+                <a class="button" href="/web/machine/add">Add Machine</a>
+            </div>
+        </header>
+        <table class="u-full-width">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>UUID</th>
+            </tr>
+            </thead>
+            <tbody>
+            <!--/*@thymesVar id="machines" type="kotlin.collections.List<moe.msm.model.Machine>"*/-->
+            <!--/*@thymesVar id="machine" type="moe.msm.model.Machine"*/-->
+            <tr th:each="machine : ${machines}">
+                <td><a th:href="'/web/machine/' + ${machine.uuid.toString()}" th:text="${machine.name}">...</a></td>
+                <td th:text="${machine.uuid.toString()}">...</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+</body>
+</html>

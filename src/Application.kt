@@ -24,10 +24,12 @@ import moe.msm.controller.apiController
 import moe.msm.controller.webController
 import moe.msm.dao.*
 import moe.msm.model.ErrorMessage
+import nz.net.ultraq.thymeleaf.LayoutDialect
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver
+import java.text.SimpleDateFormat
 import java.util.*
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
@@ -82,11 +84,13 @@ fun Application.module(testing: Boolean = false) {
             suffix = ".html"
             characterEncoding = "utf-8"
         })
+        addDialect(LayoutDialect())
     }
     install(ContentNegotiation) {
         jackson {
             enable(SerializationFeature.INDENT_OUTPUT)
             registerModule(JavaTimeModule())
+            dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
         }
     }
 

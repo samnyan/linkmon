@@ -1,0 +1,34 @@
+<html lang="zh"
+      layout:decorate="~{commons/layout.html}"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Networks - LinkMon Web</title>
+</head>
+<body>
+<section layout:fragment="content">
+    <div>
+        <header class="header-toolbar">
+            <div class="header-text">
+                <h1>Networks</h1>
+            </div>
+        </header>
+        <table class="u-full-width">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>UUID</th>
+            </tr>
+            </thead>
+            <tbody>
+            <!--/*@thymesVar id="networks" type="kotlin.collections.List<moe.msm.model.Network>"*/-->
+            <!--/*@thymesVar id="network" type="moe.msm.model.Network"*/-->
+            <tr th:each="network : ${networks}">
+                <td><a th:href="'/web/network/' + ${network.uuid.toString()}" th:text="${network.name}">...</a></td>
+                <td th:text="${network.uuid.toString()}">...</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+</body>
+</html>

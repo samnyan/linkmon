@@ -21,8 +21,10 @@ class RecordService {
         }
     }
 
-    fun getByNetworkUUID(uuid: UUID): List<Record> {
-        val query = Records.innerJoin(Networks).select { Networks.uuid eq uuid }.withDistinct()
+    fun getByNetworkUUID(uuid: UUID, size: Int = 50, offset: Long = 0): List<Record> {
+        val query =
+            Records.innerJoin(Networks).select { Networks.uuid eq uuid }.orderBy(Records.time).limit(size, offset)
+                .withDistinct()
         return transaction {
             RecordDAO.wrapRows(query).map { n -> n.toModel() }
         }

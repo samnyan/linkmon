@@ -50,7 +50,7 @@ fun Route.apiController() {
         }
 
         get("/network") {
-            call.respond(networkService.getAllNetwork())
+            call.respond(networkService.getAll())
         }
 
         post("/machine/{uuid}/network") {
