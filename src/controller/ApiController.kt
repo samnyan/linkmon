@@ -49,6 +49,15 @@ fun Route.apiController() {
             call.respond(networkService.getByMachineUUID(UUID.fromString(call.parameters["uuid"])))
         }
 
+        get("/machine/{uuid}/recent") {
+            val networkList = networkService.getByMachineUUID(UUID.fromString(call.parameters["uuid"]))
+            val result = networkList.map { n ->
+                mapOf("network" to n,
+                        "record" to recordService.getByNetworkUUID(n.uuid!!, 5, 0))
+            }
+            call.respond(result)
+        }
+
         get("/network") {
             call.respond(networkService.getAll())
         }
