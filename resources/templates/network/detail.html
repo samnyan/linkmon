@@ -17,7 +17,24 @@
         <div id="chart">
 
         </div>
-
+        <div id="down-log">
+            <table class="u-full-width">
+                <thead>
+                <tr>
+                    <th>Time</th>
+                    <th>isUp</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!--/*@thymesVar id="records" type="kotlin.collections.List<moe.msm.model.Record>"*/-->
+                <!--/*@thymesVar id="record" type="moe.msm.model.Record"*/-->
+                <tr th:each="record : ${records}">
+                    <td th:text="${record.time.toString()}">...</td>
+                    <td th:text="${record.isUp() ? 'yes':'no'}">...</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
     <script>
         function prepData(packed) {
@@ -36,27 +53,38 @@
         function makeChart(data) {
             const opts = {
                 title: "Latency Graph",
-                width: 640,
-                height: 600,
+                width: 960,
+                height: 540,
                 series: [
                     {},
                     {
                         label: "Latency",
                         scale: "ms",
-                        value: (u, v) => v.toFixed(2),
+                        value: (u, v) => v + "ms",
                         stroke: "red",
                         width: 1 / devicePixelRatio,
                     }
+                ],
+                axes: [
+                    {},
+                    {
+                        scale: "ms",
+                        values: (self, ticks) => ticks.map(rawValue => rawValue + "ms"),
+                    },
                 ]
             }
             let plot = new uPlot(opts, data, document.getElementById("chart"))
         }
 
-        const uuid = document.getElementById('uuid').value
-        fetch("/api/network/" + uuid + "/record").then(r => r.json()).then(packed => {
-            let data = prepData(packed);
-            setTimeout(() => makeChart(data), 0);
-        });
+        function loadData(size) {
+            const uuid = document.getElementById('uuid').value
+            fetch("/api/network/" + uuid + "/record?size=" + size).then(r => r.json()).then(packed => {
+                let data = prepData(packed);
+                setTimeout(() => makeChart(data), 0);
+            });
+        }
+
+        window.onload = () => loadData(10000)
     </script>
 </section>
 </body>

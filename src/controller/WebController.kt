@@ -53,7 +53,8 @@ fun Route.webController() {
                 ThymeleafContent(
                     "network/detail",
                     mapOf(
-                        "network" to networkService.getByUUID(uuid)
+                            "network" to networkService.getByUUID(uuid),
+                            "records" to recordService.getByNetworkUUID(uuid, 50, 0, true)
                     )
                 )
             )

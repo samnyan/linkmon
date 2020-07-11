@@ -5,6 +5,8 @@ import moe.msm.dao.Networks
 import moe.msm.dao.RecordDAO
 import moe.msm.dao.Records
 import moe.msm.model.Record
+import org.jetbrains.exposed.sql.SortOrder
+import org.jetbrains.exposed.sql.andWhere
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.LocalDateTime
@@ -21,12 +23,13 @@ class RecordService {
         }
     }
 
-    fun getByNetworkUUID(uuid: UUID, size: Int = 50, offset: Long = 0): List<Record> {
-        val query =
-            Records.innerJoin(Networks).select { Networks.uuid eq uuid }.orderBy(Records.time).limit(size, offset)
-                .withDistinct()
+    fun getByNetworkUUID(uuid: UUID, size: Int = 50, offset: Long = 0, isDown: Boolean = false): List<Record> {
+        var query =
+                Records.innerJoin(Networks).select { Networks.uuid eq uuid }.orderBy(Records.time, SortOrder.DESC).limit(size, offset)
+                        .withDistinct()
+        if (isDown) query = query.andWhere { Records.isUp eq false }
         return transaction {
-            RecordDAO.wrapRows(query).map { n -> n.toModel() }
+            RecordDAO.wrapRows(query).map { n -> n.toModel() }.sortedBy { n -> n.time }
         }
     }
 

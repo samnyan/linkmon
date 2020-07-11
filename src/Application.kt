@@ -86,6 +86,7 @@ fun Application.module(testing: Boolean = false) {
         })
         addDialect(LayoutDialect())
     }
+
     install(ContentNegotiation) {
         jackson {
             enable(SerializationFeature.INDENT_OUTPUT)

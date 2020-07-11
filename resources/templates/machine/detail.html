@@ -13,7 +13,7 @@
                 <h1 th:text="${machine.name} + '\'s Networks'"></h1>
             </div>
             <div class="header-action">
-                <a class="button" th:href="'/web/machine/' + ${machine.uuid.toString()} + 'add'">Add Network</a>
+                <a class="button" th:href="'/web/machine/' + ${machine.uuid.toString()} + '/add'">Add Network</a>
             </div>
         </header>
         <table class="u-full-width">

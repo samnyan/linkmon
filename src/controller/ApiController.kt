@@ -68,7 +68,9 @@ fun Route.apiController() {
         }
 
         get("/network/{uuid}/record") {
-            call.respond(recordService.getByNetworkUUID(UUID.fromString(call.parameters["uuid"])))
+            val size: Int = call.parameters["size"]?.toInt() ?: 50
+            val offset: Long = call.parameters["offset"]?.toLong() ?: 0
+            call.respond(recordService.getByNetworkUUID(UUID.fromString(call.parameters["uuid"]), size, offset))
         }
 
         get("/submit") {
