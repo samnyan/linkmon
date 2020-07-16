@@ -10,30 +10,46 @@
         <local:RecordsConverter x:Key="RecordsConverter" />
     </Window.Resources>
     <Grid>
-        <DockPanel>
-            <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
-                <TextBox Name="Host" Text="http://192.168.10.5:8080/" />
-                <TextBox Name="UUIDInput" Text="c0431f50-3d4f-468f-b457-998057f51fd7" />
-                <Button DockPanel.Dock="Top" Click="Button_Click">Load</Button>
-            </StackPanel>
-            <ListBox Name="NetworkListBox" HorizontalContentAlignment="Stretch" DockPanel.Dock="Bottom">
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <Grid Margin="0,2">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="100" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-                            <StackPanel>
-                                <TextBlock Text="{Binding Network.Name}" />
-                            </StackPanel>
-                            <StackPanel Grid.Column="1" HorizontalAlignment="Right" >
-                                <TextBlock Text="{Binding Path=Record, Converter={StaticResource RecordsConverter}}" HorizontalAlignment="Right" TextAlignment="Right" />
-                            </StackPanel>
-                        </Grid>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
-        </DockPanel>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="24"/>
+            </Grid.RowDefinitions>
+            <DockPanel DockPanel.Dock="Top">
+                <Grid DockPanel.Dock="Top">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="32"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox Grid.Column="0" Name="Host" Text="http://localhost:8080/" />
+                    <TextBox Grid.Column="1" Name="UUIDInput" Text="00000000-0000-0000-00000-000000000000" />
+                    <Button Grid.Column="2" Click="Button_Click">Load</Button>
+                </Grid>
+                <ListBox Name="NetworkListBox" HorizontalContentAlignment="Stretch" DockPanel.Dock="Bottom">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Margin="0,2">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="100" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel>
+                                    <TextBlock Text="{Binding Network.Name}" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="1" HorizontalAlignment="Right" >
+                                    <TextBlock Text="{Binding Path=Record, Converter={StaticResource RecordsConverter}}" HorizontalAlignment="Right" TextAlignment="Right" />
+                                </StackPanel>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </DockPanel>
+            <StatusBar Grid.Row="1">
+                <StatusBarItem>
+                    <TextBlock x:Name="LastUpdateText" Text="Last Update:"></TextBlock>
+                </StatusBarItem>
+            </StatusBar>
+        </Grid>
     </Grid>
 </Window>

@@ -1,8 +1,11 @@
 ﻿using Linkmon_desktop.model;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -32,22 +35,52 @@ namespace Linkmon_desktop
             InitializeComponent();
         }
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
+        private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
             var desktopWorkingArea = SystemParameters.WorkArea;
             this.Left = desktopWorkingArea.Right - this.Width;
             this.Top = desktopWorkingArea.Bottom - this.Height;
+            LoadConfig();
+            if(!string.IsNullOrEmpty(Host.Text) || !string.IsNullOrEmpty(UUIDInput.Text))
+            {
+                await LoopLoadData();
+            }
+        }
+
+        private void LoadConfig()
+        {
+            if (File.Exists("config.json"))
+            {
+                Config c = JsonConvert.DeserializeObject<Config>(File.ReadAllText("config.json"));
+                Host.Text = c.Host;
+                UUIDInput.Text = c.UUID;
+            }
+            else
+            {
+                Host.Text = "";
+                UUIDInput.Text = "";
+            }
+        }
+
+        private void SaveConfig()
+        {
+            Config c = new Config();
+            c.Host = Host.Text;
+            c.UUID = UUIDInput.Text;
+            string json = JsonConvert.SerializeObject(c);
+            File.WriteAllText("config.json", json);
         }
 
         private async Task LoadData(string uuid)
         {
             var data = await ApiClient.LoadRecent(uuid);
             NetworkListBox.ItemsSource = data;
+            LastUpdateText.Text = "Last Update: " + DateTime.Now.ToString("h:mm:ss tt");
         }
 
-        private async void Button_Click(object sender, RoutedEventArgs e)
+        private async Task LoopLoadData()
         {
-            if(cancellationToken != null)
+            if (cancellationToken != null)
             {
                 cancellationToken.Cancel();
             }
@@ -55,7 +88,7 @@ namespace Linkmon_desktop
             {
                 cancellationToken = new CancellationTokenSource();
             }
-            if(ApiClient.Client == null)
+            if (ApiClient.Client == null)
             {
                 ApiClient.InitializeClient(Host.Text);
             }
@@ -66,14 +99,19 @@ namespace Linkmon_desktop
                     await LoadData(UUIDInput.Text);
                     if (cancellationToken.IsCancellationRequested)
                         break;
-                    await Task.Delay(5, cancellationToken.Token);
+                    await Task.Delay(1000, cancellationToken.Token);
                 }
                 catch (TaskCanceledException)
                 {
                     break;
                 }
             }
-            
+        }
+
+        private async void Button_Click(object sender, RoutedEventArgs e)
+        {
+            SaveConfig();
+            await LoopLoadData();
         }
 
     }
